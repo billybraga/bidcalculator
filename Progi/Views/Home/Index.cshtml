@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Calculator";
+}
+
+<div class="jumbotron">
+    <p class="lead" style="font-weight: bold">
+        Enter desired total : <input data-bind="textInput: total" type="number" />
+    </p>
+    <p style="font-weight: bold">
+        Bid : <span data-bind="text: bid"></span>
+    </p>
+    <p>
+        User fee : <span data-bind="text: userFee"></span>
+    </p>
+    <p>
+        Sales fee : <span data-bind="text: salesFee"></span>
+    </p>
+    <p>
+        Assocation fee : <span data-bind="text: assocationFee"></span>
+    </p>
+    <p>
+        Storage fee : <span data-bind="text: storageFee"></span>
+    </p>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/CalculatorViewModel.js"></script>
+    <script>
+        var viewModel = new CalculatorViewModel();
+    </script>
+}
