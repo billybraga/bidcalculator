@@ -17,10 +17,22 @@ var CalculatorViewModel = (function () {
         if (!this.total()) {
             return;
         }
-        $
-            .post('/Home/Calculate', { total: this.total() })
-            .fail(function (x) { return _this.log(x); })
-            .then(function (x) { return _this.updateData(x); });
+        if (this.lastUpdateQuery) {
+            this.lastUpdateQuery.abort("cancelUpdate");
+        }
+        var total = this.total();
+        (this.lastUpdateQuery = $.post('/Home/Calculate', { total: total }))
+            .fail(function (x) {
+            if (x.statusText == "cancelUpdate") {
+                console.log("Canceling request for " + total);
+                return;
+            }
+            _this.log(x);
+        })
+            .then(function (x) {
+            _this.lastUpdateQuery = null;
+            _this.updateData(x);
+        });
     };
     CalculatorViewModel.prototype.log = function (result) {
         console.error("update", result);

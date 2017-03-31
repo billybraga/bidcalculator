@@ -8,6 +8,7 @@ class CalculatorViewModel {
     public salesFee = ko.observable("");
     public assocationFee = ko.observable("");
     public storageFee = ko.observable("");
+    private lastUpdateQuery: JQueryXHR; 
 
     public constructor() {
         this.total.subscribe(x => this.update());
@@ -19,10 +20,23 @@ class CalculatorViewModel {
             return;
         }
 
-        $
-            .post('/Home/Calculate', { total: this.total() })
-            .fail(x => this.log(x))
-            .then(x => this.updateData(x))
+        if (this.lastUpdateQuery) {
+            this.lastUpdateQuery.abort("cancelUpdate");
+        }
+
+        var total = this.total();
+        (this.lastUpdateQuery = $.post('/Home/Calculate', { total: total }))
+            .fail(x => {
+                if (x.statusText == "cancelUpdate") {
+                    console.log("Canceling request for " + total);
+                    return;
+                }
+                this.log(x);
+            })
+            .then(x => {
+                this.lastUpdateQuery = null;
+                this.updateData(x);
+            });
     }
 
     private log(result) {
